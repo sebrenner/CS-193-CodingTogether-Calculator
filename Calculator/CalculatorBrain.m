@@ -19,6 +19,7 @@
 @synthesize operandStack = _operandStack;
 
 -(NSMutableArray *)operandStack{
+    // Lazilly instatiate the operandStack
     if (!_operandStack) {
         _operandStack = [[NSMutableArray alloc]init];
     }
@@ -31,6 +32,7 @@
 }
 
 -(double) popOperand{
+    // Get the last operand and remove it from the stack
     NSNumber *operandObject = [self.operandStack lastObject];
     if (operandObject) {
         [self.operandStack removeLastObject];
@@ -60,7 +62,7 @@
         result = [self popOperand] - subtrahend;
     }
 
-    if ([operation isEqualToString:@"π"] ) {
+    if ([@"π" isEqualToString:operation] ) {
         result=M_PI;
     }
     

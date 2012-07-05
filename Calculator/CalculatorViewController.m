@@ -26,29 +26,34 @@
 
 @synthesize brain = _brain;
 
+- (CalculatorBrain *) brain{
+    // Lazily instantiate the brain
+    if (!_brain) {
+        _brain = [[CalculatorBrain alloc]init];
+    }
+    return _brain;
+}
+
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = [sender currentTitle];
     if (userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
         self.tape.text = [self.tape.text stringByAppendingFormat:digit];
     } else {
-        self.display.text = digit;
-        self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", digit];
-        self.userIsInTheMiddleOfEnteringANumber = YES;
+        // Prevent the user from entering leading zeros
+        if (![@"0" isEqualToString:digit]) {
+            self.display.text = digit;
+            self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", digit];
+            self.userIsInTheMiddleOfEnteringANumber = YES;
+        }
     }
 }
 
 - (IBAction)decimalPressed:(UIButton *)sender {
+    // prevent the user from entering more than one decimal
     if (!self.decimalAlreadyPressed) {
         [self digitPressed:sender];
     }
-}
-
-- (CalculatorBrain *) brain{
-    if (!_brain) {
-        _brain = [[CalculatorBrain alloc]init];
-    }
-    return _brain;
 }
 
 - (IBAction)enterPressed {
@@ -76,6 +81,7 @@
 
 - (void)viewDidUnload {
     [self setTape:nil];
+    [self setDisplay:nil];
     [super viewDidUnload];
 }
 @end
