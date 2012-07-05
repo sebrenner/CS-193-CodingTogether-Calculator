@@ -44,18 +44,44 @@
     // perform operation here, store answer in result
     if( [operation isEqualToString:@"+"]){
         result = [self popOperand] + [self popOperand];
-    } else if ([@"*" isEqualToString:operation]) {
+    }
+    
+    if ([@"*" isEqualToString:operation]) {
         result = [self popOperand] * [self popOperand];
-    } else if ([@"/" isEqualToString:operation]) {
+    }
+    
+    if ([@"/" isEqualToString:operation]) {
         double divisor = [self popOperand];
         result = [self popOperand] / divisor;
-    } else if ([@"-" isEqualToString:operation]) {
+    }
+    
+    if ([@"-" isEqualToString:operation]) {
         double subtrahend = [self popOperand];
         result = [self popOperand] - subtrahend;
     }
+
+    if ([operation isEqualToString:@"π"] ) {
+        result=M_PI;
+    }
+    
+    if ([@"Sin" isEqualToString:operation] ) {
+        result = sin([self popOperand]);
+    }
+    
+    if ([@"Cos" isEqualToString:operation] ) {
+        result = cos([self popOperand]);
+    }
+
+    if ([@"Sqrt" isEqualToString:operation] ) {
+        result = sqrt([self popOperand]);
+    }
+    
     [self pushOperand:result];  // put the result on the stack
     return result;
 }
 
+-(void) clearStack{
+    [self.operandStack removeAllObjects];
+}
 
 @end
