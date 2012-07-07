@@ -19,11 +19,10 @@
 
 @implementation CalculatorViewController
 
-@synthesize display;
-@synthesize tape;
-@synthesize userIsInTheMiddleOfEnteringANumber;
+@synthesize display = _display;
+@synthesize tape = _tape;
+@synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize decimalAlreadyPressed = _decimalAlreadyPressed;
-
 @synthesize brain = _brain;
 
 - (CalculatorBrain *) brain{
@@ -36,16 +35,18 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = [sender currentTitle];
-    if (userIsInTheMiddleOfEnteringANumber) {
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        // remove the equals sign from tape, if it exists.
+        if ([self.tape.text hasSuffix:@"="]) {
+            self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
+        }
         self.display.text = [self.display.text stringByAppendingString:digit];
         self.tape.text = [self.tape.text stringByAppendingFormat:digit];
-    } else {
+    } else if (![@"0" isEqualToString:digit]) {
         // Prevent the user from entering leading zeros
-        if (![@"0" isEqualToString:digit]) {
-            self.display.text = digit;
-            self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", digit];
-            self.userIsInTheMiddleOfEnteringANumber = YES;
-        }
+        self.display.text = digit;
+        self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", digit];
+        self.userIsInTheMiddleOfEnteringANumber = YES;
     }
 }
 
@@ -62,13 +63,13 @@
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
-    if(userIsInTheMiddleOfEnteringANumber){
+    if(self.userIsInTheMiddleOfEnteringANumber){
         [self enterPressed];
     }
     NSString *operation = [sender currentTitle];
     double result = [self.brain performOperation:operation];
-    self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
+    self.tape.text = [self.tape.text stringByAppendingFormat:@" %@ =", operation];    
 }
 
 - (IBAction)clearOperation {
@@ -77,6 +78,20 @@
     self.tape.text = [NSString stringWithFormat:@""];
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.decimalAlreadyPressed = NO;
+}
+- (IBAction)backSpace {
+    // if the user is in the middle of entering a number, remove the last digit, or decimal.
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        self.tape.text = [self.tape.text substringToIndex:self.tape.text.length - 1];
+        self.display.text = [self.display.text substringToIndex:self.display.text.length -1];
+        if (self.display.text.length < 1) {
+            self.userIsInTheMiddleOfEnteringANumber = NO;
+        }else {
+            self.userIsInTheMiddleOfEnteringANumber = YES;
+        }
+    }else {
+        NSLog(@"user pressed backspace, but they weren't in the middle of editing.");
+    }
 }
 
 - (void)viewDidUnload {
