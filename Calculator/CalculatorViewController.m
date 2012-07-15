@@ -72,6 +72,10 @@
         self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
     }
     
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        [self enterPressed];
+    }
+    
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
     self.tape.text = [self.tape.text stringByAppendingFormat:@" %@ =", operation];    

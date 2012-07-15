@@ -29,7 +29,8 @@
 -(void) pushOperand:(double)operand{
     NSNumber *operandObject = [NSNumber numberWithDouble:operand];
     [self.operandStack addObject:operandObject];
-//    NSLog(@"pushed operand %@", operandObject);
+    NSLog(@"pushed operand %@", operandObject);
+    NSLog(@"The stack= %@", self.operandStack);
 }
 
 -(double) popOperand{
@@ -38,12 +39,13 @@
     if (operandObject) {
         [self.operandStack removeLastObject];
     }
+    NSLog(@"The stack= %@", self.operandStack);
     return [operandObject doubleValue];
 }
 
 -(double) performOperation:(NSString *)operation{
     double result = 0;
-//    NSLog(@"The operation: %@", operation);
+    NSLog(@"The operation: %@", operation);
     
     // perform operation here, store answer in result
     if( [operation isEqualToString:@"+"]){
@@ -56,6 +58,7 @@
     
     if ([@"/" isEqualToString:operation]) {
         double divisor = [self popOperand];
+        NSLog(@"dividing by: %g", divisor);
         result = [self popOperand] / divisor;
     }
     
@@ -81,6 +84,7 @@
     }
     
     [self pushOperand:result];  // put the result on the stack
+    NSLog(@"The stack= %@", self.operandStack);
     return result;
 }
 
