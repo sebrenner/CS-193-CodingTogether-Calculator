@@ -13,6 +13,7 @@
 
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic) BOOL decimalAlreadyPressed;
+@property (nonatomic) BOOL negativeNumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
 
 @end
@@ -23,6 +24,7 @@
 @synthesize tape = _tape;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize decimalAlreadyPressed = _decimalAlreadyPressed;
+@synthesize negativeNumber = _negativeNumber;
 @synthesize brain = _brain;
 
 - (CalculatorBrain *) brain{
@@ -35,11 +37,12 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = [sender currentTitle];
+    // remove the equals sign from tape, if it exists.
+    if ([self.tape.text hasSuffix:@"="]) {
+        self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
+    }
+
     if (self.userIsInTheMiddleOfEnteringANumber) {
-        // remove the equals sign from tape, if it exists.
-        if ([self.tape.text hasSuffix:@"="]) {
-            self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
-        }
         self.display.text = [self.display.text stringByAppendingString:digit];
         self.tape.text = [self.tape.text stringByAppendingFormat:digit];
     } else if (![@"0" isEqualToString:digit]) {
@@ -54,19 +57,27 @@
     // prevent the user from entering more than one decimal
     if (!self.decimalAlreadyPressed) {
         [self digitPressed:sender];
+        self.decimalAlreadyPressed = YES;
     }
 }
 
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsInTheMiddleOfEnteringANumber = NO;
+    self.negativeNumber = NO;
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
-    if(self.userIsInTheMiddleOfEnteringANumber){
+    NSString *operation = [sender currentTitle];
+    // remove the equals sign from tape, if it exists.
+    if ([self.tape.text hasSuffix:@"="]) {
+        self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
+    }
+    if ([@"+/-" isEqualToString:self.tape.text] ) {
+    }else {
         [self enterPressed];
     }
-    NSString *operation = [sender currentTitle];
+    
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
     self.tape.text = [self.tape.text stringByAppendingFormat:@" %@ =", operation];    
@@ -91,6 +102,18 @@
         }
     }else {
         NSLog(@"user pressed backspace, but they weren't in the middle of editing.");
+    }
+}
+
+- (IBAction)changeSign {
+    if(self.negativeNumber){
+        NSLog(@"Switching from negative to positive number.");
+        self.negativeNumber = NO;
+        self.display.text = [self.display.text substringFromIndex:1];
+    }else {
+        NSLog(@"Switching from positive (%@) to negative number.", self.display.text);
+        self.negativeNumber = YES;
+        self.display.text = [NSString stringWithFormat:@"-%@", self.display.text];
     }
 }
 

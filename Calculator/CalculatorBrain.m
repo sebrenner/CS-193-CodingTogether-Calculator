@@ -29,6 +29,7 @@
 -(void) pushOperand:(double)operand{
     NSNumber *operandObject = [NSNumber numberWithDouble:operand];
     [self.operandStack addObject:operandObject];
+    NSLog(@"pushed operand %@", operandObject);
 }
 
 -(double) popOperand{
@@ -42,6 +43,7 @@
 
 -(double) performOperation:(NSString *)operation{
     double result = 0;
+    NSLog(@"The operation: %@", operation);
     
     // perform operation here, store answer in result
     if( [operation isEqualToString:@"+"]){
@@ -76,6 +78,11 @@
 
     if ([@"Sqrt" isEqualToString:operation] ) {
         result = sqrt([self popOperand]);
+    }
+
+    if ([@"+ / -" isEqualToString:operation] ) {
+        result = -1 * [self popOperand];
+        NSLog(@"The result: %@", result);
     }
     
     [self pushOperand:result];  // put the result on the stack
