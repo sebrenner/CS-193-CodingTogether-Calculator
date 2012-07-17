@@ -29,8 +29,8 @@
 -(void) pushOperand:(double)operand{
     NSNumber *operandObject = [NSNumber numberWithDouble:operand];
     [self.operandStack addObject:operandObject];
-    NSLog(@"pushed operand %@", operandObject);
-    NSLog(@"The stack= %@", self.operandStack);
+//    NSLog(@"pushed operand %@", operandObject);
+//    NSLog(@"The stack= %@", self.operandStack);
 }
 
 -(double) popOperand{
@@ -90,9 +90,17 @@
             result = sqrt(target);
         }
     }
+
+    if ([@"changeSign" isEqualToString:operation] ) {
+        NSLog(@"About to change sign in brain");
+        //    NSLog(@"The stack= %@", self.operandStack);
+        double temp = [self popOperand];
+        result = -1 * temp;
+        NSLog(@"Just changed sign in brain %@", result);
+    }
     
     [self pushOperand:result];  // put the result on the stack
-    NSLog(@"The stack= %@", self.operandStack);
+//    NSLog(@"The stack= %@", self.operandStack);
     return result;
 }
 

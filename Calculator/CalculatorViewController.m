@@ -72,13 +72,15 @@
         self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
     }
     
+    // press enter to push operand
     if (self.userIsInTheMiddleOfEnteringANumber) {
         [self enterPressed];
-    }
+    }    
     
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
 
+    // if the operation is clear, the clear tape otherwise append operation with equals sign.
     if ([operation isEqualToString:@"C"]) {
         self.tape.text = @"";
     }else {
@@ -98,10 +100,20 @@
         }else {
             self.userIsInTheMiddleOfEnteringANumber = YES;
         }
-    }else {
-        NSLog(@"user pressed backspace, but they weren't in the middle of editing.");
     }
 }
+- (IBAction)changeSign {
+    // if user is in middle of enter number, change sign of number, else change sign of number on brain stack.
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        double tempValue = [self.display.text doubleValue];
+        tempValue = -1 * tempValue;
+        self.display.text = [NSString stringWithFormat:@"%g", tempValue];
+    }else {
+        double result = [self.brain performOperation:@"changeSign"];
+        self.display.text = [NSString stringWithFormat:@"%g",result];
+    }
+}
+
 
 - (void)viewDidUnload {
     [self setTape:nil];
