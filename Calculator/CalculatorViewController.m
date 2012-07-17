@@ -78,16 +78,16 @@
     
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
-    self.tape.text = [self.tape.text stringByAppendingFormat:@" %@ =", operation];    
-}
 
-- (IBAction)clearOperation {
-    [self.brain clearStack];
-    self.display.text = [NSString stringWithFormat:@"0"];
-    self.tape.text = [NSString stringWithFormat:@""];
+    if ([operation isEqualToString:@"C"]) {
+        self.tape.text = @"";
+    }else {
+        self.tape.text = [self.tape.text stringByAppendingFormat:@" %@ =", operation];
+    }
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.decimalAlreadyPressed = NO;
 }
+
 - (IBAction)backSpace {
     // if the user is in the middle of entering a number, remove the last digit, or decimal.
     if (self.userIsInTheMiddleOfEnteringANumber) {

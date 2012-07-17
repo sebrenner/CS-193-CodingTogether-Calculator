@@ -55,7 +55,12 @@
     if ([@"*" isEqualToString:operation]) {
         result = [self popOperand] * [self popOperand];
     }
-    
+
+    if ([@"C" isEqualToString:operation]) {
+        [self clearStack];
+        result = 0;
+    }
+
     if ([@"/" isEqualToString:operation]) {
         double divisor = [self popOperand];
         NSLog(@"dividing by: %g", divisor);
@@ -80,7 +85,10 @@
     }
 
     if ([@"Sqrt" isEqualToString:operation] ) {
-        result = sqrt([self popOperand]);
+        double target = [self popOperand];
+        if (target >0) {
+            result = sqrt(target);
+        }
     }
     
     [self pushOperand:result];  // put the result on the stack
