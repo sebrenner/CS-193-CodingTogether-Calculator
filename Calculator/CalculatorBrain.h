@@ -12,6 +12,12 @@
 
 -(void) pushOperand:(double)operand;
 -(double) performOperation:(NSString *)operation;
--(void) clearStack;
+//-(void) clearStack;  // Not in prof's version
+
+@property (nonatomic, readonly) id program;
+
++ (NSString *)descriptionOfProgram:(id)program;
++ (double)runProgram:(id)program;
+
 
 @end
