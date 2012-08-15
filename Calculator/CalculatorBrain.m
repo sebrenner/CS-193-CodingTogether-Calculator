@@ -105,14 +105,12 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
+    NSSet *variables = [self variablesUsedInProgram:program];
     
     // Convert variables (nstrings) to nsnumbers using dictionary.
-    // Loop through program, if any item the program array is not an NSNumber or an operation, then replace it with dictionary value or zero if no dictioary value is present.
+    // Loop through program, if any item in the program array is also the variables set, then replace it with dictionary value or zero if no dictionary value is present.
     for (int i=0; i <= [stack count]; i++) {
-        // if item in stack is a operation or a number continue, else convert varialbe to number.
-        if ([self isOperation:[stack objectAtIndex:i]] || [[stack objectAtIndex:i] isKindOfClass:[NSNumber class]]){
-            continue;
-        } else {
+        if ([variables containsObject:[stack objectAtIndex:i]]) {
             if ([variableValues objectForKey:[stack objectAtIndex:i]]) {
                 [stack insertObject:[variableValues objectForKey:[stack objectAtIndex:i]] atIndex:i];
             }else{
