@@ -15,9 +15,8 @@
 //-(void) clearStack;  // Not in prof's version
 
 @property (nonatomic, readonly) id program;
-
-+ (NSString *)descriptionOfProgram:(id)program;
 + (double)runProgram:(id)program;
-
++ (NSString *)descriptionOfProgram:(id)program;
++ (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues;
 
 @end

@@ -72,18 +72,17 @@
         self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
     }
     
-    // press enter to push operand
+    // call enterPressed to push operand
     if (self.userIsInTheMiddleOfEnteringANumber) {
         [self enterPressed];
     }    
     
-    double result = [self.brain performOperation:operation];
-    self.display.text = [NSString stringWithFormat:@"%g",result];
-
     // if the operation is clear, then clear tape, otherwise append operation with equals sign.
     if ([operation isEqualToString:@"C"]) {
         self.tape.text = @"";
     }else {
+        double result = [self.brain performOperation:operation];
+        self.display.text = [NSString stringWithFormat:@"%g",result];
         self.tape.text = [self.tape.text stringByAppendingFormat:@" %@ =", operation];
     }
     self.userIsInTheMiddleOfEnteringANumber = NO;

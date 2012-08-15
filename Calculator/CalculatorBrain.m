@@ -99,4 +99,23 @@
     return [self popOperandOffProgramStack:stack];
 }
 
++ (double)runProgram:(id)program usingVariableValues:(NSDictionary *)variableValues
+{
+    NSMutableArray *stack;
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [program mutableCopy];
+    }
+    // Convert variables (nstrings) to nsnumbers using dictionary.
+    // Loop through program, if any item the program array is also a dictionary key, replace it with dictionary value.
+    for (int i=0; i <= [stack count]; i++) {
+        if ([variableValues objectForKey:[stack objectAtIndex:i]]) {
+            // there is variable in both the stack/program and the dictionary
+            [stack insertObject:[variableValues objectForKey:[stack objectAtIndex:i]] atIndex:i];
+        }
+    }
+    
+    // run the program and return the result.
+    return [self popOperandOffProgramStack:stack];
+
+}
 @end
