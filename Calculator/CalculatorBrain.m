@@ -28,6 +28,8 @@
 
 + (NSString *)descriptionOfProgram:(id)program
 {
+    NSLog([program description]);
+    return [program description];
     return @"Implement this in Homework #2";
 }
 
@@ -96,6 +98,7 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
+    [self descriptionOfProgram:program];
     return [self popOperandOffProgramStack:stack];
 }
 
@@ -112,9 +115,9 @@
     for (int i=0; i <= [stack count]; i++) {
         if ([variables containsObject:[stack objectAtIndex:i]]) {
             if ([variableValues objectForKey:[stack objectAtIndex:i]]) {
-                [stack insertObject:[variableValues objectForKey:[stack objectAtIndex:i]] atIndex:i];
+                [stack replaceObjectAtIndex:i withObject:[variableValues objectForKey:[stack objectAtIndex:i]]];
             }else{
-                [stack insertObject:[NSNumber numberWithDouble:0] atIndex:i];
+                [stack replaceObjectAtIndex:i withObject:[NSNumber numberWithDouble:0]];
             }
         }
     }
