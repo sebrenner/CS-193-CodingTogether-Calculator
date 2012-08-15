@@ -105,17 +105,51 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
+    
     // Convert variables (nstrings) to nsnumbers using dictionary.
-    // Loop through program, if any item the program array is also a dictionary key, replace it with dictionary value.
+    // Loop through program, if any item the program array is not an NSNumber or an operation, then replace it with dictionary value or zero if no dictioary value is present.
     for (int i=0; i <= [stack count]; i++) {
-        if ([variableValues objectForKey:[stack objectAtIndex:i]]) {
-            // there is variable in both the stack/program and the dictionary
-            [stack insertObject:[variableValues objectForKey:[stack objectAtIndex:i]] atIndex:i];
+        // if item in stack is a operation or a number continue, else convert varialbe to number.
+        if ([self isOperation:[stack objectAtIndex:i]] || [[stack objectAtIndex:i] isKindOfClass:[NSNumber class]]){
+            continue;
+        } else {
+            if ([variableValues objectForKey:[stack objectAtIndex:i]]) {
+                [stack insertObject:[variableValues objectForKey:[stack objectAtIndex:i]] atIndex:i];
+            }else{
+                [stack insertObject:[NSNumber numberWithDouble:0] atIndex:i];
+            }
         }
     }
     
     // run the program and return the result.
     return [self popOperandOffProgramStack:stack];
-
 }
+
++ (BOOL)isOperation:(NSString *) item
+{
+    NSSet *operations = [NSSet setWithObjects:@"+",@"-",@"*",@"/",@"Sqrt",@"π",@"Sin", @"Cos", @"changeSign", nil];
+    
+    return [operations containsObject:item];
+}
+
++ (NSSet *)variablesUsedInProgram:(id)program
+{
+    // Assumes any string that isn't an operation is a variable.
+    NSMutableSet *theVariables;
+    for (int i=0; i <= [program count]; i++) {
+        if ([self isOperation:[program objectAtIndex:i]] || [[program objectAtIndex:i] isKindOfClass:[NSNumber class]]){
+            continue;
+        } else if([[program objectAtIndex:i] isKindOfClass:[NSString class]]){
+            [theVariables addObject:[program objectAtIndex:i]];
+        }
+    }
+    
+    if ([theVariables count] > 0) {
+        return [theVariables copy];
+    }else
+    {
+        return nil;
+    }
+}
+
 @end
