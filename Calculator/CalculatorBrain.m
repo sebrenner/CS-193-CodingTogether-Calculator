@@ -151,7 +151,7 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
-    [self descriptionOfProgram:program];
+    NSLog(@"this is the description: %@",[self descriptionOfProgram:program]);
     return [self popOperandOffProgramStack:stack];
 }
 

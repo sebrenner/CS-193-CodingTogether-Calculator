@@ -114,6 +114,18 @@
     }
 }
 
+- (IBAction)variablePressed:(UIButton *)sender {
+    if (self.userIsInTheMiddleOfEnteringANumber) {
+        [self enterPressed];
+    }
+    NSString *variable = [sender currentTitle];
+
+    self.display.text = [self.display.text stringByAppendingString:variable];
+    self.tape.text = [self.tape.text stringByAppendingString:variable];    
+}
+- (IBAction)runTest:(UIButton *)sender {
+    NSLog(@"Test button pressed.");
+}
 
 - (void)viewDidUnload {
     [self setTape:nil];
