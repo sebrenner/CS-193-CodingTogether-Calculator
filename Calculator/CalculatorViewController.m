@@ -80,6 +80,7 @@
     // if the operation is clear, then clear tape, otherwise append operation with equals sign.
     if ([operation isEqualToString:@"C"]) {
         self.tape.text = @"";
+        self.display.text = @"0";
     }else {
         double result = [self.brain performOperation:operation];
         self.display.text = [NSString stringWithFormat:@"%g",result];

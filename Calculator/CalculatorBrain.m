@@ -13,7 +13,10 @@
 + (BOOL)isOperation:(NSString *)item;
 - (void)pushOperand:(double)operand;
 + (double)popOperandOffProgramStack:(NSMutableArray *)stack;
-
++ (BOOL)isVariable:(NSString *)item;
++ (BOOL)isNoOperandOpperation:(NSString *)item;
++ (BOOL)isTwoOperandOperator:(NSString *)item;
++ (BOOL)isSingleOperandOperator:(NSString *)item;
 
 @end
 
@@ -55,42 +58,32 @@
     }
     /*
      if number, set result to number,
-     if vaiable, set result to variable,
-     if no-operand operation, set result to no-operand operation
-     if only item in stack, return result.
-     if not in the middle of two operand operation, return result.
-    
-     
+     if variable, set result to variable,
+     if no-operand operation, set result to no-operand operation.
+     if one-operand operation, set result to operation(destripction of top of stack).
+     if two-operand operation, set result to (left) operation (right).
+     NOTE THAT STACK IS MUTABLE SO IT CHANGES EACH TIME descriptionOfTopOfStack: IS CALLED.
+     Call describe the right side befefore describeing the left.    
      */
      
-    
-    
     if ([topOfStack isKindOfClass:[NSNumber class]] ||
         [self isVariable:topOfStack] ||
         [self isNoOperandOpperation:topOfStack]) {
         result = topOfStack;
     }
     
-    
-    
-    if ([singleOperandOperators containsObject:[stack objectAtIndex:-1]]) {
-        // if top of stack is a a single-operand operation, return the top of the stack, followed by an open parenthesis.
-        return [NSString stringWithFormat:@" %@ ( ",[stack objectAtIndex:-1]];
+    if ([self isSingleOperandOperator:topOfStack]) {
+        // if top of stack is a a single-operand operation,
+        result = [NSString stringWithFormat:@" %@ (%@)", topOfStack, [self descriptionOfTopOfStack:stack]];
     }
-    else if ([twoOperandOperators containsObject:[stack objectAtIndex:-1]]) {
-        // if top of stack is a two-operand operation, return the operand with leading and trailing parenthesis.
-        return [NSString stringWithFormat:@" ) %@ ( ",[stack objectAtIndex:-1]];
+    else if ([self isTwoOperandOperator:topOfStack]) {
+        // if top of stack is a two-operand operation, determine the right side first, then the left.
+        NSString *right = [self descriptionOfTopOfStack:stack];
+        NSString *left  = [self descriptionOfTopOfStack:stack];
+        
+        result = [NSString stringWithFormat:@" (%@) %@ (%@)", left, topOfStack, right];
     }
-    else
-    {
-        //  if top of stack is a variable,
-        //  a no-operand operation,
-        //  or  a number,
-        //  return the top of stack
-        //        NSSet *variables = [self variablesUsedInProgram:stack];
-        //        NSSet *noOperandOperators = [[NSSet alloc]initWithObjects:@"π", nil];
-        return [NSString stringWithFormat:@" %@ ",[stack objectAtIndex:-1]];
-    }
+    return result;    
 }
 
 - (void)pushOperand:(double)operand
