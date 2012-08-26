@@ -9,6 +9,12 @@
 
 @interface CalculatorBrain()
 @property (nonatomic, strong) NSMutableArray *programStack;
++ (NSSet *)variablesUsedInProgram:(id)program;
++ (BOOL)isOperation:(NSString *)item;
+- (void)pushOperand:(double)operand;
++ (double)popOperandOffProgramStack:(NSMutableArray *)stack;
+
+
 @end
 
 @implementation CalculatorBrain
@@ -28,9 +34,63 @@
 
 + (NSString *)descriptionOfProgram:(id)program
 {
-    NSLog([program description]);
-    return [program description];
-    return @"Implement this in Homework #2";
+    NSLog(@"Describing program %@", program);
+    NSString *result;
+    NSMutableArray *stack;
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [program mutableCopy];
+    }
+    result = [[NSString alloc]initWithString:[self descriptionOfTopOfStack:stack]];
+    NSLog(@"Description: %@", result);
+    return result;
+}
+
++ (NSString *)descriptionOfTopOfStack:(NSMutableArray *)stack
+{
+    NSString *result = @"0";
+    
+    id topOfStack = stack.lastObject;
+    if (topOfStack) {
+        [stack removeLastObject];
+    }
+    /*
+     if number, set result to number,
+     if vaiable, set result to variable,
+     if no-operand operation, set result to no-operand operation
+     if only item in stack, return result.
+     if not in the middle of two operand operation, return result.
+    
+     
+     */
+     
+    
+    
+    if ([topOfStack isKindOfClass:[NSNumber class]] ||
+        [self isVariable:topOfStack] ||
+        [self isNoOperandOpperation:topOfStack]) {
+        result = topOfStack;
+    }
+    
+    
+    
+    if ([singleOperandOperators containsObject:[stack objectAtIndex:-1]]) {
+        // if top of stack is a a single-operand operation, return the top of the stack, followed by an open parenthesis.
+        return [NSString stringWithFormat:@" %@ ( ",[stack objectAtIndex:-1]];
+    }
+    else if ([twoOperandOperators containsObject:[stack objectAtIndex:-1]]) {
+        // if top of stack is a two-operand operation, return the operand with leading and trailing parenthesis.
+        return [NSString stringWithFormat:@" ) %@ ( ",[stack objectAtIndex:-1]];
+    }
+    else
+    {
+        //  if top of stack is a variable,
+        //  a no-operand operation,
+        //  or  a number,
+        //  return the top of stack
+        //        NSSet *variables = [self variablesUsedInProgram:stack];
+        //        NSSet *noOperandOperators = [[NSSet alloc]initWithObjects:@"π", nil];
+        return [NSString stringWithFormat:@" %@ ",[stack objectAtIndex:-1]];
+    }
 }
 
 - (void)pushOperand:(double)operand
@@ -153,4 +213,25 @@
     }
 }
 
++ (BOOL)isVariable:(NSString *)item{
+    // This is very elegant.  Instead it should take advantage of + (NSSet *)variablesUsedInProgram:(id)program.
+    // But I am not sure how to do that.
+    NSSet *variables = [[NSSet alloc]initWithObjects:@"a", @"b", @"x", nil];
+    return [variables containsObject:item];
+}
+
++ (BOOL)isSingleOperandOperator:(NSString *)item{
+    NSSet *singleOperandOperators = [[NSSet alloc]initWithObjects:@"Sqrt", @"Sin", @"Cos", nil];
+    return [singleOperandOperators containsObject:item];
+}
+
++ (BOOL)isNoOperandOpperation:(NSString *)item{
+    NSSet *noOperandOperators = [[NSSet alloc] initWithObjects:@"π", nil];
+    return [noOperandOperators containsObject:item];
+}
+
++ (BOOL)isTwoOperandOperator:(NSString *)item{
+    NSSet *twoOperandOperators = [[NSSet alloc] initWithObjects:@"+", @"-", @"*", @"/", nil];
+    return [twoOperandOperators containsObject:item];
+}
 @end
