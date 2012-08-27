@@ -11,10 +11,9 @@
 @property (nonatomic, strong) NSMutableArray *programStack;
 + (NSSet *)variablesUsedInProgram:(id)program;
 + (BOOL)isOperation:(NSString *)item;
-- (void)pushOperand:(double)operand;
 + (double)popOperandOffProgramStack:(NSMutableArray *)stack;
 + (BOOL)isVariable:(NSString *)item;
-+ (BOOL)isNoOperandOpperation:(NSString *)item;
++ (BOOL)isNoOperandOperation:(NSString *)item;
 + (BOOL)isTwoOperandOperator:(NSString *)item;
 + (BOOL)isSingleOperandOperator:(NSString *)item;
 
@@ -37,7 +36,7 @@
 
 + (NSString *)descriptionOfProgram:(id)program
 {
-    NSLog(@"Describing program %@", program);
+    NSLog(@"in descriptionOfProgram. Describing program %@", program);
     NSString *result;
     NSMutableArray *stack;
     if ([program isKindOfClass:[NSArray class]]) {
@@ -68,7 +67,7 @@
      
     if ([topOfStack isKindOfClass:[NSNumber class]] ||
         [self isVariable:topOfStack] ||
-        [self isNoOperandOpperation:topOfStack]) {
+        [self isNoOperandOperation:topOfStack]) {
         result = topOfStack;
     }
     
@@ -90,6 +89,15 @@
 {
     [self.programStack addObject:[NSNumber numberWithDouble:operand]];
 }
+
+- (void)pushVariable:(NSString*)variable
+{
+    NSLog(@"Pushing Variable %@.", variable);
+    NSLog(@"Program Stack %@.", self.programStack);
+    NSLog(@"Program description: %@.", [[self class] descriptionOfProgram:self.program]);
+    [self.programStack addObject:[NSString stringWithString:variable]];
+}
+
 
 - (double)performOperation:(NSString *)operation
 {
@@ -218,7 +226,7 @@
     return [singleOperandOperators containsObject:item];
 }
 
-+ (BOOL)isNoOperandOpperation:(NSString *)item{
++ (BOOL)isNoOperandOperation:(NSString *)item{
     NSSet *noOperandOperators = [[NSSet alloc] initWithObjects:@"π", nil];
     return [noOperandOperators containsObject:item];
 }

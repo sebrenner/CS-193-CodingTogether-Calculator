@@ -42,11 +42,11 @@
 
     if (self.userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
-        self.tape.text = [self.tape.text stringByAppendingString:digit];
+//        self.tape.text = [self.tape.text stringByAppendingString:digit];
     } else if (![@"0" isEqualToString:digit]) {
         // Prevent the user from entering leading zeros
         self.display.text = digit;
-        self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", digit];
+//        self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", digit];
         self.userIsInTheMiddleOfEnteringANumber = YES;
     }
 }
@@ -84,7 +84,7 @@
     }else {
         double result = [self.brain performOperation:operation];
         self.display.text = [NSString stringWithFormat:@"%g",result];
-        self.tape.text = [self.tape.text stringByAppendingFormat:@" %@ =", operation];
+        self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
     }
     self.userIsInTheMiddleOfEnteringANumber = NO;
     self.decimalAlreadyPressed = NO;
@@ -93,7 +93,6 @@
 - (IBAction)backSpace {
     // if the user is in the middle of entering a number, remove the last digit, or decimal.
     if (self.userIsInTheMiddleOfEnteringANumber) {
-        self.tape.text = [self.tape.text substringToIndex:self.tape.text.length - 1];
         self.display.text = [self.display.text substringToIndex:self.display.text.length -1];
         if (self.display.text.length < 1) {
             self.userIsInTheMiddleOfEnteringANumber = NO;
@@ -107,10 +106,8 @@
     if (self.userIsInTheMiddleOfEnteringANumber) {
         double tempValue = [self.display.text doubleValue];
         tempValue = -1 * tempValue;
-        self.display.text = [NSString stringWithFormat:@"%g", tempValue];
     }else {
-        double result = [self.brain performOperation:@"changeSign"];
-        self.display.text = [NSString stringWithFormat:@"%g",result];
+        [self.brain performOperation:@"changeSign"];
     }
 }
 
@@ -119,9 +116,9 @@
         [self enterPressed];
     }
     NSString *variable = [sender currentTitle];
+    [self.brain pushVariable:variable];
 
     self.display.text = [self.display.text stringByAppendingString:variable];
-    self.tape.text = [self.tape.text stringByAppendingString:variable];    
 }
 - (IBAction)runTest:(UIButton *)sender {
     NSLog(@"Test button pressed.");
