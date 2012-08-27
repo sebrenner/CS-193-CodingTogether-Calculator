@@ -9,9 +9,11 @@
 
 @interface CalculatorBrain()
 @property (nonatomic, strong) NSMutableArray *programStack;
++ (NSString *)descriptionOfTopOfStack:(NSMutableArray *)stack;
 + (NSSet *)variablesUsedInProgram:(id)program;
-+ (BOOL)isOperation:(NSString *)item;
 + (double)popOperandOffProgramStack:(NSMutableArray *)stack;
+
++ (BOOL)isOperation:(NSString *)item;
 + (BOOL)isVariable:(NSString *)item;
 + (BOOL)isNoOperandOperation:(NSString *)item;
 + (BOOL)isTwoOperandOperator:(NSString *)item;
@@ -43,7 +45,6 @@
         stack = [program mutableCopy];
     }
     result = [[NSString alloc]initWithString:[self descriptionOfTopOfStack:stack]];
-    NSLog(@"Description: %@", result);
     return result;
 }
 
@@ -159,7 +160,6 @@
     if ([program isKindOfClass:[NSArray class]]) {
         stack = [program mutableCopy];
     }
-    NSLog(@"this is the description: %@",[self descriptionOfProgram:program]);
     return [self popOperandOffProgramStack:stack];
 }
 
@@ -173,7 +173,9 @@
     
     // Convert variables (nstrings) to nsnumbers using dictionary.
     // Loop through program, if any item in the program array is also the variables set, then replace it with dictionary value or zero if no dictionary value is present.
-    for (int i=0; i <= [stack count]; i++) {
+    for (int i=0; i < [stack count]; i++) {
+        NSLog(@"i = %d",i);
+        NSLog(@"[stack count] = %d",[stack count]);
         if ([variables containsObject:[stack objectAtIndex:i]]) {
             if ([variableValues objectForKey:[stack objectAtIndex:i]]) {
                 [stack replaceObjectAtIndex:i withObject:[variableValues objectForKey:[stack objectAtIndex:i]]];
@@ -189,18 +191,34 @@
 
 + (BOOL)isOperation:(NSString *) item
 {
-    NSSet *operations = [NSSet setWithObjects:@"+",@"-",@"*",@"/",@"Sqrt",@"π",@"Sin", @"Cos", @"changeSign", nil];
+    NSSet *operations = [NSSet setWithObjects:@"+", @"-", @"*",@"/",@"Sqrt",@"π",@"Sin", @"Cos", @"changeSign", nil];
     
-    return [operations containsObject:item];
+    if ([operations containsObject:item]) {
+        NSLog(@"item (%@) is operation", item);
+        return YES;
+    }else
+    {
+        NSLog(@"item (%@) is not opperation",item);
+        return NO;
+    }
 }
 
 + (NSSet *)variablesUsedInProgram:(id)program
 {
     // Assumes any string that isn't an operation is a variable.
+
     NSMutableSet *theVariables;
-    for (int i=0; i <= [program count]; i++) {
-        if ([self isOperation:[program objectAtIndex:i]] || [[program objectAtIndex:i] isKindOfClass:[NSNumber class]]){
-            continue;
+    for (int i=0; i < [program count]; i++) {
+        
+        NSLog(@"object at index %d: %@", i, [program objectAtIndex:i]);
+
+        
+        
+        if ([self isOperation:[program objectAtIndex:i]]){
+            NSLog(@"got to isOperation.");
+            if([[program objectAtIndex:i] isKindOfClass:[NSNumber class]]){
+                continue;
+            }
         } else if([[program objectAtIndex:i] isKindOfClass:[NSString class]]){
             [theVariables addObject:[program objectAtIndex:i]];
         }

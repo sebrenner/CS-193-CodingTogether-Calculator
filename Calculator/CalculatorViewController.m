@@ -14,6 +14,7 @@
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic) BOOL decimalAlreadyPressed;
 @property (nonatomic, strong) CalculatorBrain *brain;
+@property (nonatomic, strong) NSDictionary *testVariableValues;
 
 @end
 
@@ -21,9 +22,12 @@
 
 @synthesize display = _display;
 @synthesize tape = _tape;
+@synthesize listOfVariables = _listOfVariables;
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize decimalAlreadyPressed = _decimalAlreadyPressed;
 @synthesize brain = _brain;
+@synthesize testVariableValues = _testVariableValues;
+
 
 - (CalculatorBrain *) brain{
     // Lazily instantiate the brain
@@ -35,18 +39,11 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     NSString *digit = [sender currentTitle];
-    // remove the equals sign from tape, if it exists.
-    if ([self.tape.text hasSuffix:@"="]) {
-        self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
-    }
-
     if (self.userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
-//        self.tape.text = [self.tape.text stringByAppendingString:digit];
     } else if (![@"0" isEqualToString:digit]) {
         // Prevent the user from entering leading zeros
         self.display.text = digit;
-//        self.tape.text = [self.tape.text stringByAppendingFormat:@" %@", digit];
         self.userIsInTheMiddleOfEnteringANumber = YES;
     }
 }
@@ -62,16 +59,17 @@
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
     self.userIsInTheMiddleOfEnteringANumber = NO;
+    [self updateDisplay];
 }
 
 - (IBAction)operationPressed:(UIButton *)sender {
     NSString *operation = [sender currentTitle];
 
-    // remove the equals sign from tape, if it exists.
-    if ([self.tape.text hasSuffix:@"="]) {
-        self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
-    }
-    
+//    // remove the equals sign from tape, if it exists.
+//    if ([self.tape.text hasSuffix:@"="]) {
+//        self.tape.text = [self.tape.text substringToIndex:self.tape.text.length -1];
+//    }
+//    
     // call enterPressed to push operand
     if (self.userIsInTheMiddleOfEnteringANumber) {
         [self enterPressed];
@@ -82,8 +80,8 @@
         self.tape.text = @"";
         self.display.text = @"0";
     }else {
-        double result = [self.brain performOperation:operation];
-        self.display.text = [NSString stringWithFormat:@"%g",result];
+        [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues];
+        [self updateDisplay];
         self.tape.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
     }
     self.userIsInTheMiddleOfEnteringANumber = NO;
@@ -117,16 +115,46 @@
     }
     NSString *variable = [sender currentTitle];
     [self.brain pushVariable:variable];
-
-    self.display.text = [self.display.text stringByAppendingString:variable];
+    [self updateDisplay];
 }
+
 - (IBAction)runTest:(UIButton *)sender {
-    NSLog(@"Test button pressed.");
+    NSLog(@"Test button pressed. title: %@", sender.currentTitle);
+    
+    if ([sender.currentTitle isEqualToString: @"Test 1"]) {
+        NSLog(@"test1");
+        self.testVariableValues = [[NSDictionary alloc]initWithObjectsAndKeys: @"5", @"a", @"4.8", @"b", @"0", @"x", nil ];
+    }
+    if ([sender.currentTitle isEqualToString: @"Test 2"]) {
+        NSLog(@"test1");
+        self.testVariableValues = [[NSDictionary alloc]initWithObjectsAndKeys:@"500.4", @"a", @"234.8", @"b", @"0.2", @"x" , nil ];
+    }
+    if ([sender.currentTitle isEqualToString: @"Test 3"]) {
+        NSLog(@"test1");
+        self.testVariableValues = [[NSDictionary alloc]initWithObjectsAndKeys: @"15", @"a", @".48", @"b", @"40", @"x", nil ];
+    }
+    NSLog(@"Here is the testVariableValues dictionary: %@", self.testVariableValues);
+    [self populateListOfVariablesDisplay];
+}
+
+- (void)populateListOfVariablesDisplay{
+    NSLog(@"populateListOfVariablesDisplay.");
+    self.listOfVariables.text = @"";
+    for (id key in [self.testVariableValues allKeys]) {
+        NSLog(@"%@ = %@",key,[self.testVariableValues objectForKey:key]);
+        self.listOfVariables.text = [self.listOfVariables.text stringByAppendingFormat:@"%@ = %@; ", key,[self.testVariableValues objectForKey:key]];
+    }
+}
+
+- (void)updateDisplay{
+    NSLog(@"Updating display.");
+    self.display.text = [NSString stringWithFormat:@"%f", [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues]];
 }
 
 - (void)viewDidUnload {
     [self setTape:nil];
     [self setDisplay:nil];
+    [self setListOfVariables:nil];
     [super viewDidUnload];
 }
 @end

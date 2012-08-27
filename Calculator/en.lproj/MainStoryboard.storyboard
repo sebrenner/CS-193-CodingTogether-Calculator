@@ -463,11 +463,19 @@
                                     <action selector="variablePressed:" destination="2" eventType="touchUpInside" id="JFa-9w-k5l"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" id="ONT-0q-e8S">
+                                <rect key="frame" x="20" y="419" width="280" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
                         <outlet property="display" destination="a9f-Mq-vuQ" id="mfk-eL-dsV"/>
+                        <outlet property="listOfVariables" destination="ONT-0q-e8S" id="Nvd-uZ-h6Q"/>
                         <outlet property="tape" destination="iyG-KV-1Bi" id="R4k-qZ-WAD"/>
                     </connections>
                 </viewController>
@@ -475,15 +483,6 @@
             <point key="canvasLocation" x="-165" y="84"/>
         </scene>
     </scenes>
-    <classes>
-        <class className="CalculatorViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/CalculatorViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="display" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="tape" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
