@@ -96,7 +96,7 @@
         //    NSLog(@"The stack= %@", self.operandStack);
         double temp = [self popOperand];
         result = -1 * temp;
-        NSLog(@"Just changed sign in brain %@", result);
+        NSLog(@"Just changed sign in brain %f", result);
     }
     
     [self pushOperand:result];  // put the result on the stack

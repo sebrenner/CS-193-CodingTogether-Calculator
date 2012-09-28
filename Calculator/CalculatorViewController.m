@@ -42,7 +42,7 @@
 
     if (self.userIsInTheMiddleOfEnteringANumber) {
         self.display.text = [self.display.text stringByAppendingString:digit];
-        self.tape.text = [self.tape.text stringByAppendingFormat:digit];
+        self.tape.text = [self.tape.text stringByAppendingString:digit];
     } else if (![@"0" isEqualToString:digit]) {
         // Prevent the user from entering leading zeros
         self.display.text = digit;
