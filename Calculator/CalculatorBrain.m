@@ -65,6 +65,19 @@
         double divisor = [self popOperand];
         NSLog(@"dividing by: %g", divisor);
         result = [self popOperand] / divisor;
+        if (divisor == 0) {
+            
+            //  Cause a diagog box to pop up
+            UIAlertView *alertDialog;
+            alertDialog = [[UIAlertView alloc]
+                           initWithTitle: @"Error: Divide by Zero"
+                           message:@"You cannot divide by zero."
+                           delegate: self
+                           cancelButtonTitle: @"Ok"
+                           otherButtonTitles: nil];
+            alertDialog.alertViewStyle=UIAlertViewStyleDefault;
+            [alertDialog show];
+        }
     }
     
     if ([@"-" isEqualToString:operation]) {
