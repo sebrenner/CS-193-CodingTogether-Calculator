@@ -9,116 +9,129 @@
 #import "CalculatorBrain.h"
 
 @interface CalculatorBrain()
-
-@property (nonatomic, strong) NSMutableArray *operandStack;
-
+@property (nonatomic, strong) NSMutableArray *programStack;
 @end
 
 @implementation CalculatorBrain
 
-@synthesize operandStack = _operandStack;
+@synthesize programStack = _programStack;
 
--(NSMutableArray *)operandStack{
+-(NSMutableArray *)programStack{
     // Lazilly instatiate the operandStack
-    if (!_operandStack) {
-        _operandStack = [[NSMutableArray alloc]init];
+    if (!_programStack) {
+        _programStack = [[NSMutableArray alloc]init];
     }
-    return _operandStack;
+    return _programStack;
+}
+
+- (id)program
+{
+    return [self.programStack copy];
+}
+
++ (NSString *)descriptionOfProgram:(id)program
+{
+    return @"Implement this in Homework #2";
 }
 
 -(void) pushOperand:(double)operand{
     NSNumber *operandObject = [NSNumber numberWithDouble:operand];
-    [self.operandStack addObject:operandObject];
+    [self.programStack addObject:operandObject];
 //    NSLog(@"pushed operand %@", operandObject);
 //    NSLog(@"The stack= %@", self.operandStack);
 }
 
 -(double) popOperand{
     // Get the last operand and remove it from the stack
-    NSNumber *operandObject = [self.operandStack lastObject];
+    NSNumber *operandObject = [self.programStack lastObject];
     if (operandObject) {
-        [self.operandStack removeLastObject];
+        [self.programStack removeLastObject];
     }
-    NSLog(@"The stack= %@", self.operandStack);
+    NSLog(@"The stack= %@", self.programStack);
     return [operandObject doubleValue];
 }
 
--(double) performOperation:(NSString *)operation{
+- (double)performOperation:(NSString *)operation
+{
+    [self.programStack addObject:operation];
+    return [[self class] runProgram:self.program];
+}
+
++ (double)popOperandOffProgramStack:(NSMutableArray *)stack
+{
     double result = 0;
-    NSLog(@"The operation: %@", operation);
     
-    // perform operation here, store answer in result
-    if( [operation isEqualToString:@"+"]){
-        result = [self popOperand] + [self popOperand];
-    }
+    id topOfStack = [stack lastObject];
+    if (topOfStack) [stack removeLastObject];
     
-    if ([@"*" isEqualToString:operation]) {
-        result = [self popOperand] * [self popOperand];
+    if ([topOfStack isKindOfClass:[NSNumber class]])
+    {
+        result = [topOfStack doubleValue];
     }
-
-    if ([@"C" isEqualToString:operation]) {
-        [self clearStack];
-        result = 0;
-    }
-
-    if ([@"/" isEqualToString:operation]) {
-        double divisor = [self popOperand];
-        NSLog(@"dividing by: %g", divisor);
-        result = [self popOperand] / divisor;
-        if (divisor == 0) {
-            
-            //  Cause a diagog box to pop up
-            UIAlertView *alertDialog;
-            alertDialog = [[UIAlertView alloc]
-                           initWithTitle: @"Error: Divide by Zero"
-                           message:@"You cannot divide by zero."
-                           delegate: self
-                           cancelButtonTitle: @"Ok"
-                           otherButtonTitles: nil];
-            alertDialog.alertViewStyle=UIAlertViewStyleDefault;
-            [alertDialog show];
+    else if ([topOfStack isKindOfClass:[NSString class]])
+    {
+        NSString *operation = topOfStack;
+        if ([operation isEqualToString:@"+"]) {
+            result = [self popOperandOffProgramStack:stack] +
+            [self popOperandOffProgramStack:stack];
+        } else if ([@"*" isEqualToString:operation]) {
+            result = [self popOperandOffProgramStack:stack] *
+            [self popOperandOffProgramStack:stack];
+        } else if ([operation isEqualToString:@"-"]) {
+            double subtrahend = [self popOperandOffProgramStack:stack];
+            result = [self popOperandOffProgramStack:stack] - subtrahend;
+        } else if ([operation isEqualToString:@"/"]) {
+            double divisor = [self popOperandOffProgramStack:stack];
+            if (divisor) {
+                result = [self popOperandOffProgramStack:stack] / divisor;
+            }else{
+                //  Cause a diagog box to pop up
+                UIAlertView *alertDialog;
+                alertDialog = [[UIAlertView alloc]
+                               initWithTitle: @"Error: Divide by Zero"
+                               message:@"You cannot divide by zero."
+                               delegate: self
+                               cancelButtonTitle: @"Ok"
+                               otherButtonTitles: nil];
+                alertDialog.alertViewStyle=UIAlertViewStyleDefault;
+                [alertDialog show];
+            }
+        } else if ([@"C" isEqualToString:operation]) {
+            //                [self.programStack removeAllObjects];
+            result = 0;
+        } else if ([@"π" isEqualToString:operation] ) {
+            result=M_PI;
+        } else if ([@"Sin" isEqualToString:operation] ) {
+            result = sin([self popOperandOffProgramStack:stack]);
+            [self popOperandOffProgramStack:stack];
+        }
+        
+        if ([@"Cos" isEqualToString:operation] ) {
+            result = cos([self popOperandOffProgramStack:stack]);
+            [self popOperandOffProgramStack:stack];
+        }
+        
+        if ([@"Sqrt" isEqualToString:operation] ) {
+            result = sqrt([self popOperandOffProgramStack:stack]);
+            [self popOperandOffProgramStack:stack];
+        }
+        
+        if ([@"changeSign" isEqualToString:operation] ) {
+            NSLog(@"About to change sign in brain");            
+            result = [self popOperandOffProgramStack:stack] * -1;
+            [self popOperandOffProgramStack:stack];
         }
     }
-    
-    if ([@"-" isEqualToString:operation]) {
-        double subtrahend = [self popOperand];
-        result = [self popOperand] - subtrahend;
-    }
-
-    if ([@"π" isEqualToString:operation] ) {
-        result=M_PI;
-    }
-    
-    if ([@"Sin" isEqualToString:operation] ) {
-        result = sin([self popOperand]);
-    }
-    
-    if ([@"Cos" isEqualToString:operation] ) {
-        result = cos([self popOperand]);
-    }
-
-    if ([@"Sqrt" isEqualToString:operation] ) {
-        double target = [self popOperand];
-        if (target >0) {
-            result = sqrt(target);
-        }
-    }
-
-    if ([@"changeSign" isEqualToString:operation] ) {
-        NSLog(@"About to change sign in brain");
-        //    NSLog(@"The stack= %@", self.operandStack);
-        double temp = [self popOperand];
-        result = -1 * temp;
-        NSLog(@"Just changed sign in brain %f", result);
-    }
-    
-    [self pushOperand:result];  // put the result on the stack
-//    NSLog(@"The stack= %@", self.operandStack);
     return result;
 }
 
--(void) clearStack{
-    [self.operandStack removeAllObjects];
++ (double)runProgram:(id)program
+{
+    NSMutableArray *stack;
+    if ([program isKindOfClass:[NSArray class]]) {
+        stack = [program mutableCopy];
+    }
+    return [self popOperandOffProgramStack:stack];
 }
 
 @end
